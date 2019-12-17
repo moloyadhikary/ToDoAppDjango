@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load app_extras %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Add To Do Item</h2>
+                </div>
+                <div class="card-body">
+                    <form action="add_todo" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Task For</span>
+                                    </div>
+                                    <select name="task_type" class="form-control">
+                                        {% for type in taskTypes %}
+                                            <option value={{ type.id }}>{{ type.type_of_task }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control mb-2 mr-sm-2" name="content"
+                                       placeholder="type here..." required>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="submit" class="btn btn-primary mb-2"><i class="material-icons">save</i>
+                                    Save Task
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-10"><h2>Things to do: {{ addedTasks.count }}</h2></div>
+                        <div class="col-sm-2 text-right"><a href="completed_tasks" type="button" class="btn btn-sm"><i
+                                class="material-icons">done_all</i> Completed Tasks</a></div>
+                    </div>
+                </div>
+                <ul class="list-group">
+                    {% for todo in addedTasks %}
+                        <li class="list-group-item" aria-disabled="true" style="font-weight: bold"><span
+                                style="color: brown">{{ todo.text }}
+                            ({{ todo.task_type.type_of_task }})</span>
+                            <div class="float-right">
+                                <div class="progress mb-2">
+                                    <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25"
+                                         aria-valuemin="0" aria-valuemax="100">25%
+                                    </div>
+                                </div>
+                                <a href="#" data-id="{{ todo.id }}"
+                                   class="btn btn-sm btn-success addTaskModalOpener"><i
+                                        class="material-icons">add_box</i> Sub Task</a>
+                                <a href="#/{{ todo.id }}"
+                                   class="btn btn-sm btn-success"><i class="material-icons">edit</i> Edit</a>
+                                <a href="complete_todo/{{ todo.id }}"
+                                   class="btn btn-sm btn-success"><i class="material-icons">done</i> Completed</a>
+                            </div>
+                            <br/>
+                            {% for st in todo.subtask_set.all %}
+                                <br/>
+                                {% if st.task_status == 'Done' %}
+                                    <span style="">&emsp;&emsp;&emsp;--- <strike>{{ st.task_text }}</strike> ({{ st.task_status }})</span>
+                                {% elif st.task_status == 'Started' %}
+                                    <span style="color: darkgreen;">&emsp;&emsp;&emsp;--- {{ st.task_text }} ({{ st.task_status }})</span>
+                                    <a href="edit_sub_task/{{ st.id }}"><i class="material-icons">edit</i></a>
+                                {% else %}
+                                    <span style="color: darkblue;">&emsp;&emsp;&emsp;--- {{ st.task_text }} ({{ st.task_status }})</span>
+                                    <a href="edit_sub_task/{{ st.id }}"><i class="material-icons">edit</i></a>
+                                {% endif %}
+                            {% endfor %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addSubTaskModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form action="add_sub_task" method="post">
+                {% csrf_token %}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add New Sub Task</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="hidden" id="mainTaskId" name="mainTaskId">
+                            <input type="text" class="form-control" id="subTaskText" name="subTaskText"
+                                   placeholder="type here..." required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary"><i class="material-icons">save</i>Save Sub Task
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+{% block scripts %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+
+        });
+        $(".addTaskModalOpener").on("click", function () {
+            var taskId = $(this).data('id');
+            $("#addSubTaskModal").modal('show');
+            $("#mainTaskId").val(taskId);
+        });
+    </script>
+{% endblock scripts %}
+
+
+

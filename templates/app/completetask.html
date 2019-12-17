@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="col-sm-12 mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h2>Task Completed: <font color="green">{{ task.text }}</font></h2>
+            </div>
+            <form action="{% url 'task_completed' task.id %}" method="post">
+                {% csrf_token %}
+                <textarea class="form-control" rows="8" name="complete_note" placeholder="Completion note" required></textarea>
+                <br />
+                <div class="text-center">
+                <button type="submit" class="btn btn-primary mb-2 text-right"><i class="material-icons">save</i> Task Completed</button>&nbsp;
+                    <a href="/" type="button" class="btn btn-info mb-2 text-right">Back to Front <i class="material-icons">forward</i></a>
+                    </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock content %}

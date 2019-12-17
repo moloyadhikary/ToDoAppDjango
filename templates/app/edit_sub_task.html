@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="col-sm-12 mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h2>Edit Sub Task: <font color="green">{{ subTask.task_text }}</font></h2>
+            </div>
+
+            <div class="card-body">
+                <form action="/frm_edit_sub_task" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Status</span>
+                                </div>
+                                <input type="hidden" name="id" value="{{ subTask.id }}">
+                                <select name="task_status" id="task_status" class="form-control col-sm-6 text-center">
+                                    <option value="Raised">Raised</option>
+                                    <option value="Started">Started</option>
+                                    <option value="Done">Done</option>
+                                </select>
+                            </div>
+                            <br/>
+                            <button type="submit" class="btn btn-primary mb-2 text-right"><i
+                                    class="material-icons">save</i> Save Data
+                            </button>&nbsp;
+                            <a href="/" type="button" class="btn btn-info mb-2 text-right">Back to Front <i
+                                    class="material-icons">forward</i></a>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Sun Task Name</span>
+                                </div>
+                                <input type="text" name="task_test" value="{{ subTask.task_text }}" required class="form-control">
+                            </div>
+                        <textarea class="form-control" rows="8" name="complete_note" placeholder="Sub task note">{{ subTask.task_note }}</textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+            $("#task_status").val('{{ subTask.task_status }}');
+        })
+    </script>
+
+{% endblock %}
